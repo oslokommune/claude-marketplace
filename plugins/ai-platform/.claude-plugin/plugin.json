@@ -1,6 +1,6 @@
 {
 "name": "origo-ai-platform",
-"description": "",
+"description": "A set of best practices and tools for Claude code usage in Origo",
 "version": "1.0.0",
 "author": {
     "name": "KITT"
