@@ -1,0 +1,15 @@
+{
+"name": "origo-iac-platform-using-terraform-boilerplate-ok",
+"description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates.",
+"version": "1.0.0",
+"author": {
+    "name": "Kjøremiljø"
+},
+"keywords": ["iac", "infrastructure as code", "terraform", "boilerplate", "origo", "ok-tool", "aws", "ecs", "rds"],
+"mcpServers": {
+    "enterprise-db": {
+        "command": "${CLAUDE_PLUGIN_ROOT}/servers/db-server",
+        "args": ["--config", "${CLAUDE_PLUGIN_ROOT}/config.json"]
+    }
+}
+}

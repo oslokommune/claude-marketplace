@@ -1,0 +1,9 @@
+{
+"name": "origo-design-system-using-punkt-components",
+"description": "How to create frontend applications using Punkt - Origos design system components.",
+"version": "1.0.0",
+"author": {
+    "name": "Designsystem"
+},
+"keywords": ["design system", "frontend", "punkt", "origo", "components", "react", "webcomponents", "ui", "styles", "css", "icons"]
+}

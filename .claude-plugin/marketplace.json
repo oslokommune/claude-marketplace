@@ -1,18 +1,40 @@
 {
-  "name": "origo-tools",
+  "name": "origo",
   "owner": {
     "name": "KITT",
     "email": "sondre.engebraten@origo.oslo.kommune.no"
   },
   "plugins": [
     {
-      "name": "origo-platform",
-      "source": "./plugins/origo-platform",
-      "description": "A collection of skills for Oslo Origo platform",
+      "name": "designsystem",
+      "source": "./plugins/designsystem",
+      "description": "How create frontend applications using Punkt Origos design system components.",
       "version": "1.0.0",
       "author": {
-        "name": "KITT"
+        "name": "Sondre Engebråten"
+      }
+    },
+    {
+      "name": "iac-platform",
+      "source": "./plugins/iac-platform",
+      "description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Sondre Engebråten"
+      }
+    },
+    {
+      "name": "ai-platform",
+      "source": "./plugins/ai-platform",
+      "description": "Tools and utilities for using and building with AI models",
+      "version": "1.0.0",
+      "author": {
+        "name": "Sondre Engebråten"
       }
     }
-  ]
+  ],
+  "metadata": {
+    "description": "A collection of plugins for Oslo Origo",
+    "version": "1.0.0"
+  }
 }
