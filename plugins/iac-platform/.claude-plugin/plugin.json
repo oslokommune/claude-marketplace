@@ -1,6 +1,6 @@
 {
-"name": "origo-iac-platform-using-terraform-boilerplate-ok",
-"description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates.",
+"name": "origo-iac-platform",
+"description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates with the help of the OK tool.",
 "version": "1.0.0",
 "author": {
     "name": "Kjøremiljø"
