@@ -10,30 +10,34 @@ This skill provides guidance on using the `ok` tool to manage Boilerplate templa
 ## Overview
 
 The `ok` tool is a comprehensive infrastructure management toolbox that streamlines Terraform environment setup and maintenance.
-This repository contains **30 templates** (24 Terraform, 6 GitHub Actions).
 
-## Core `ok pkg` Commands
+## Basic `ok pkg` usage
 
-### Adding a Template
-
-```bash
-# Add a template to your package manifest
-ok pkg add <template-url> [--output-folder <path>]
-```
-
-**Template URL format:**
-```
-github.com/oslokommune/golden-path-boilerplate//boilerplate/<type>/<template-name>?ref=<version>
-```
-
-### Installing/Updating Templates
+### Step 1: Add the stack
 
 ```bash
-# Install or update all templates in package manifest
+ok pkg add app app-pollo
+```
+
+### Step 2: Configure your new template
+
+Update the configuration found in "package-config.yml"
+
+### Step 3: Install the template
+
+While in the folder:
+```bash
 ok pkg install
+```
 
+### Updating a template
+
+```bash
 # Update package manifest and configurations
 ok pkg update
+
+# Install templates in package manifest
+ok pkg install
 ```
 
 ## Available Templates
@@ -80,15 +84,6 @@ ok pkg update
 
 
 
-## Template Documentation
-
-Each template in the Available Templates section above links to detailed documentation that includes:
-- Required and optional variables
-- Feature flags and configuration
-- Dependencies
-- Example configurations
-- Recent changelog entries
-
 ## Working with Templates
 
 ### Step 1: Choose a Template
@@ -101,9 +96,7 @@ Each template in the Available Templates section above links to detailed documen
 
 ```bash
 # Example: Add the app template
-ok pkg add \\
-  github.com/oslokommune/golden-path-boilerplate//boilerplate/terraform/app?ref=app-v10.1.5 \\
-  --output-folder infrastructure/app
+ok pkg add <template> <name>
 ```
 
 ### Step 3: Configure Variables
@@ -126,42 +119,6 @@ ok pkg install
 3. **Check Dependencies**: Some templates depend on others (e.g., `app` requires `app-data`)
 4. **Review Changelogs**: Check recent changes section in template docs for breaking updates
 5. **Validate Configuration**: Use `ok pkg fmt` to format package manifests
-
-## Common Workflows
-
-### Setting up a new application
-
-```bash
-# 1. Add networking template
-ok pkg add github.com/oslokommune/golden-path-boilerplate//boilerplate/terraform/networking?ref=networking-v3.0.1
-
-# 2. Add load balancer
-ok pkg add github.com/oslokommune/golden-path-boilerplate//boilerplate/terraform/load-balancing-alb?ref=load-balancing-alb-v4.0.0
-
-# 3. Add application
-ok pkg add github.com/oslokommune/golden-path-boilerplate//boilerplate/terraform/app?ref=app-v10.1.5
-
-# 4. Configure variables in package-config.yml
-# 5. Generate infrastructure code
-ok pkg install
-```
-
-### Adding a database
-
-```bash
-# Add databases template
-ok pkg add github.com/oslokommune/golden-path-boilerplate//boilerplate/terraform/databases?ref=databases-v5.0.0
-
-# Configure in package-config.yml and install
-ok pkg install
-```
-
-## Troubleshooting
-
-- **Missing variables**: Check template documentation for required variables
-- **Dependency errors**: Ensure dependent templates are added first
-- **Version conflicts**: Use `ok pkg update` to sync configurations
-- **Template not found**: Verify template name and version in the Available Templates section above
 
 ## Reference
 
