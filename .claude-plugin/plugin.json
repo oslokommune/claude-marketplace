@@ -1,0 +1,7 @@
+{
+"name": "origo",
+"description": "A plugin for Oslo Origo",
+"version": "1.0.0",
+"author": {
+"name": "Sondre Engebråten"
+}
