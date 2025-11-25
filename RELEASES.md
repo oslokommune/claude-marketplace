@@ -64,16 +64,33 @@ If you need to trigger a release manually or debug the workflow:
 
 ### Required GitHub Settings
 
-**1. Enable Workflow Permissions**
+**1. Create a Personal Access Token (Required for Organization Repos)**
 
-Go to **Settings → Actions → General → Workflow permissions** and configure:
+For organization repositories (like `oslokommune/claude-plugin`), you need a Personal Access Token (PAT) with `repo` scope:
+
+1. Go to **GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)**
+2. Click **Generate new token (classic)**
+3. Give it a descriptive name: `release-please-claude-plugin`
+4. Set expiration (recommend: 90 days or 1 year)
+5. Check **repo** scope (full control of private repositories)
+6. Click **Generate token** and copy the token
+
+Then add it to your repository:
+
+1. Go to **Repository Settings → Secrets and variables → Actions**
+2. Click **New repository secret**
+3. Name: `RELEASE_PLEASE_TOKEN`
+4. Value: Paste your PAT
+5. Click **Add secret**
+
+**2. Enable Workflow Permissions (If not using PAT)**
+
+If using a personal repository (not organization), go to **Settings → Actions → General → Workflow permissions**:
 
 - Select "Read and write permissions"
 - Check "Allow GitHub Actions to create and approve pull requests"
 
-This gives the default `GITHUB_TOKEN` permission to create releases.
-
-**2. Enable Auto-Merge (Optional)**
+**3. Enable Auto-Merge (Optional)**
 
 For fully automated releases:
 
@@ -128,11 +145,22 @@ Release PRs are automatically merged, but you can review them before they merge 
 ## Troubleshooting
 
 ### "author_id does not have push access" error
-This means GitHub Actions doesn't have permission to create releases. Fix:
+
+**For Organization Repos:** This means you need to create and add a Personal Access Token (PAT). The default `GITHUB_TOKEN` doesn't have permission to create releases in organization repositories.
+
+**Solution:**
+1. Create a PAT with `repo` scope (see Prerequisites section above)
+2. Add it as a repository secret named `RELEASE_PLEASE_TOKEN`
+3. Push an empty commit to trigger the workflow:
+   ```bash
+   git commit --allow-empty -m "chore: trigger release" && git push
+   ```
+
+**For Personal Repos:** This means GitHub Actions doesn't have write permissions.
 1. Go to **Settings → Actions → General → Workflow permissions**
 2. Select "Read and write permissions"
 3. Check "Allow GitHub Actions to create and approve pull requests"
-4. Push an empty commit to trigger the workflow: `git commit --allow-empty -m "chore: trigger release" && git push`
+4. Retry the workflow
 
 ### Release PR not created?
 - Check that your commits use conventional commit format

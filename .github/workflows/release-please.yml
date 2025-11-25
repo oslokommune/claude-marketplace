@@ -19,12 +19,15 @@ jobs:
           # Release all packages in manifest
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
+          # Use RELEASE_PLEASE_TOKEN if available (required for org repos)
+          # Otherwise fall back to GITHUB_TOKEN
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
 
       # Auto-merge release PRs
       - name: Enable auto-merge for release PRs
         if: ${{ steps.release.outputs.prs_created == 'true' }}
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Enable auto-merge for all created release PRs
           prs='${{ steps.release.outputs.prs }}'
@@ -41,7 +44,7 @@ jobs:
       - name: Create and upload plugin archives
         if: ${{ steps.release.outputs.releases_created }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_PLEASE_TOKEN || secrets.GITHUB_TOKEN }}
         run: |
           # Parse the releases output JSON
           echo '${{ steps.release.outputs.releases_created }}' | jq -r '.[]' | while IFS= read -r release; do
