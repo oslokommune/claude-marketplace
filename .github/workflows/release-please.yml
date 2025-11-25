@@ -1,0 +1,52 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          # Release all packages in manifest
+          manifest-file: .release-please-manifest.json
+          config-file: release-please-config.json
+
+      # Upload plugin archives as release assets
+      - name: Checkout code
+        if: ${{ steps.release.outputs.releases_created }}
+        uses: actions/checkout@v4
+
+      - name: Create and upload plugin archives
+        if: ${{ steps.release.outputs.releases_created }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Parse the releases output JSON
+          echo '${{ steps.release.outputs.releases_created }}' | jq -r '.[]' | while IFS= read -r release; do
+            path=$(echo "$release" | jq -r '.path')
+            tag_name=$(echo "$release" | jq -r '.tag_name')
+            version=$(echo "$release" | jq -r '.version')
+
+            # Extract plugin name from path (e.g., plugins/ai-platform -> ai-platform)
+            plugin=$(basename "$path")
+
+            # Create archive
+            cd "$path"
+            archive_name="${plugin}-${version}.tar.gz"
+            tar -czf "../../${archive_name}" .
+            cd ../..
+
+            # Upload to release
+            gh release upload "$tag_name" "$archive_name" --clobber
+
+            echo "Uploaded $archive_name to release $tag_name"
+          done
