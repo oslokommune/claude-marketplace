@@ -20,6 +20,19 @@ jobs:
           manifest-file: .release-please-manifest.json
           config-file: release-please-config.json
 
+      # Auto-merge release PRs
+      - name: Enable auto-merge for release PRs
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Enable auto-merge for all created release PRs
+          prs='${{ steps.release.outputs.prs }}'
+          echo "$prs" | jq -r '.[].number' | while read -r pr_number; do
+            echo "Enabling auto-merge for PR #$pr_number"
+            gh pr merge "$pr_number" --auto --squash --repo ${{ github.repository }}
+          done
+
       # Upload plugin archives as release assets
       - name: Checkout code
         if: ${{ steps.release.outputs.releases_created }}

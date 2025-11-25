@@ -35,17 +35,21 @@ When you push commits to `main`, release-please will:
    - Updated version in `.claude-plugin/plugin.json`
    - Generated `CHANGELOG.md`
    - Release notes
+5. **Automatically merge the Release PR** (no manual approval needed)
 
 ### 3. Creating a Release
 
-To release a plugin:
+Releases happen automatically:
 
-1. **Review the Release PR** created by release-please
-2. **Merge the Release PR** into `main`
-3. release-please will automatically:
-   - Create a GitHub release
-   - Create a git tag (e.g., `origo-ai-platform-v1.1.0`)
-   - Upload a tarball archive (e.g., `ai-platform-1.1.0.tar.gz`)
+1. **Push conventional commits** to `main`
+2. **release-please creates Release PR** with version bumps and changelog
+3. **PR is automatically merged** via GitHub Actions
+4. release-please then automatically:
+   - Creates a GitHub release
+   - Creates a git tag (e.g., `origo-ai-platform-v1.1.0`)
+   - Uploads a tarball archive (e.g., `ai-platform-1.1.0.tar.gz`)
+
+No manual intervention needed!
 
 ## Manual Release (if needed)
 
@@ -55,6 +59,17 @@ If you need to trigger a release manually or debug the workflow:
 2. Click **Run workflow**
 3. Select the `main` branch
 4. Click **Run workflow**
+
+## Prerequisites
+
+For auto-merge to work, ensure the following GitHub repository settings are configured:
+
+1. **Settings → General → Pull Requests**
+   - Enable "Allow auto-merge"
+
+2. **Settings → Branches (optional)**
+   - If you have branch protection on `main`, make sure it doesn't require approval
+   - Or add the GitHub Actions bot to the list of users who can bypass requirements
 
 ## Configuration Files
 
@@ -92,9 +107,9 @@ Add this to your commit message:
 Release-As: 2.0.0
 ```
 
-### Preview Changes
+### Reviewing Releases
 
-Release PRs show exactly what will be released. Review them carefully before merging!
+Release PRs are automatically merged, but you can review them before they merge by checking the GitHub Actions tab. If you need to prevent auto-merge, disable the workflow or close the PR before it merges.
 
 ## Troubleshooting
 
@@ -106,7 +121,7 @@ Release PRs show exactly what will be released. Review them carefully before mer
 ### Wrong version number?
 - Review your commit messages
 - Use `!` for breaking changes: `feat!: breaking change`
-- Edit the Release PR before merging to adjust version/changelog
+- Close the auto-generated PR and push a corrected commit with the right conventional commit prefix
 
 ### Need to release without commits?
 You can manually create and merge a Release PR, or add an empty commit:
