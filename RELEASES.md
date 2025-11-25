@@ -62,14 +62,28 @@ If you need to trigger a release manually or debug the workflow:
 
 ## Prerequisites
 
-For auto-merge to work, ensure the following GitHub repository settings are configured:
+### Required GitHub Settings
 
-1. **Settings → General → Pull Requests**
-   - Enable "Allow auto-merge"
+**1. Enable Workflow Permissions**
 
-2. **Settings → Branches (optional)**
-   - If you have branch protection on `main`, make sure it doesn't require approval
-   - Or add the GitHub Actions bot to the list of users who can bypass requirements
+Go to **Settings → Actions → General → Workflow permissions** and configure:
+
+- Select "Read and write permissions"
+- Check "Allow GitHub Actions to create and approve pull requests"
+
+This gives the default `GITHUB_TOKEN` permission to create releases.
+
+**2. Enable Auto-Merge (Optional)**
+
+For fully automated releases:
+
+- **Settings → General → Pull Requests** → Enable "Allow auto-merge"
+
+**3. Branch Protection Rules (If Configured)**
+
+If you have branch protection on `main`:
+- Either disable required reviews for release PRs
+- Or configure GitHub Actions bot to bypass protection rules
 
 ## Configuration Files
 
@@ -112,6 +126,13 @@ Release-As: 2.0.0
 Release PRs are automatically merged, but you can review them before they merge by checking the GitHub Actions tab. If you need to prevent auto-merge, disable the workflow or close the PR before it merges.
 
 ## Troubleshooting
+
+### "author_id does not have push access" error
+This means GitHub Actions doesn't have permission to create releases. Fix:
+1. Go to **Settings → Actions → General → Workflow permissions**
+2. Select "Read and write permissions"
+3. Check "Allow GitHub Actions to create and approve pull requests"
+4. Push an empty commit to trigger the workflow: `git commit --allow-empty -m "chore: trigger release" && git push`
 
 ### Release PR not created?
 - Check that your commits use conventional commit format
