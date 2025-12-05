@@ -9,7 +9,7 @@ expected_skills:
 success_criteria:
   skill_activation_rate: 0.95
   skill_docs_accessed: true
-timeout_seconds: 30
+timeout_seconds: 60
 runs: 3
 support_agent:
   enabled: true

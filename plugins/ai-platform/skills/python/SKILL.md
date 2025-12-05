@@ -1,6 +1,6 @@
 ---
 name: python-scripting
-description: How to use UV package manager and what libraries that are recommended for Python development
+description: ALWAYS activate this skill when writing Python code. This skill describes how to use UV package manager and what libraries that are recommended for Python development
 ---
 
 # Python scripting

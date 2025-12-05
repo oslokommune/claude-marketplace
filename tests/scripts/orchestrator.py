@@ -18,13 +18,14 @@ native non-interactive mode with -p flag.
 import sys
 import time
 import yaml
+import threading
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn
 
 # Import our modules
 sys.path.insert(0, str(Path(__file__).parent / "utils"))
@@ -34,6 +35,69 @@ sys.path.insert(0, str(Path(__file__).parent))
 from analyzer import TranscriptAnalyzer, TestResult
 from reporter import Reporter
 from test_runner import TestRunner, ExecutionStatus
+
+
+class SimpleProgressTracker:
+    """Thread-safe progress tracker for stdout output"""
+
+    def __init__(self, verbose: bool = False):
+        self.lock = threading.Lock()
+        self.verbose = verbose
+        self.prompt_status: Dict[str, Dict[int, str]] = {}  # {prompt_name: {run_num: status}}
+        self.prompt_totals: Dict[str, int] = {}  # {prompt_name: total_runs}
+
+    def init_prompt(self, prompt_name: str, total_runs: int):
+        """Initialize tracking for a prompt"""
+        with self.lock:
+            self.prompt_status[prompt_name] = {}
+            self.prompt_totals[prompt_name] = total_runs
+
+    def mark_running(self, prompt_name: str, run_num: int, container_id: Optional[str] = None):
+        """Mark a trial as running"""
+        with self.lock:
+            self.prompt_status[prompt_name][run_num] = "running"
+            msg = f"[{prompt_name}] Trial {run_num}/{self.prompt_totals[prompt_name]}: Running..."
+            if self.verbose and container_id:
+                msg += f" (container: {container_id[:12]})"
+            print(msg)
+            sys.stdout.flush()
+
+    def mark_complete(self, prompt_name: str, run_num: int, success: bool, exec_time: float,
+                     errors: Optional[List[str]] = None):
+        """Mark a trial as complete"""
+        with self.lock:
+            status = "✓ PASS" if success else "✗ FAIL"
+            self.prompt_status[prompt_name][run_num] = status
+            msg = f"[{prompt_name}] Trial {run_num}/{self.prompt_totals[prompt_name]}: {status} ({exec_time:.1f}s)"
+
+            if self.verbose and errors:
+                msg += f"\n  Errors: {', '.join(errors[:3])}"
+                if len(errors) > 3:
+                    msg += f" (+{len(errors)-3} more)"
+
+            print(msg)
+            sys.stdout.flush()
+
+    def print_verbose(self, prompt_name: str, run_num: int, message: str):
+        """Print verbose debug message"""
+        if self.verbose:
+            with self.lock:
+                print(f"  [{prompt_name}] Trial {run_num}: {message}")
+                sys.stdout.flush()
+
+    def print_summary(self):
+        """Print overall progress summary"""
+        with self.lock:
+            summaries = []
+            for prompt_name in sorted(self.prompt_status.keys()):
+                statuses = self.prompt_status[prompt_name]
+                total = self.prompt_totals[prompt_name]
+                passed = sum(1 for s in statuses.values() if s == "✓ PASS")
+                pct = (passed / total * 100) if total > 0 else 0
+                summaries.append(f"[{prompt_name}] {passed}/{total} passed ({pct:.0f}%)")
+
+            print(f"\nProgress: {' | '.join(summaries)}\n")
+            sys.stdout.flush()
 
 
 @dataclass
@@ -57,6 +121,9 @@ class SimplifiedOrchestrator:
         self.config_dir = self.tests_dir / "config" / "docker"
         self.verbose = verbose
         self.override_runs = override_runs
+
+        # Create single timestamp for this orchestrator run
+        self.orchestrator_timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
 
         self.console = Console()
         self.docker_manager: Optional[DockerManager] = None
@@ -94,6 +161,43 @@ class SimplifiedOrchestrator:
 
         return prompts
 
+    def cleanup_orphaned_containers(self) -> None:
+        """Clean up orphaned containers from previous test runs"""
+        self.console.print("[bold]Checking for orphaned containers...[/bold]")
+
+        # Create a temporary DockerManager to check for orphans
+        temp_manager = DockerManager(self.config_dir / "Dockerfile")
+
+        # First, find orphaned containers
+        orphaned = temp_manager.find_orphaned_containers()
+
+        if not orphaned:
+            self.console.print("[green]✓ No orphaned containers found[/green]")
+            return
+
+        # List what will be cleaned up
+        self.console.print(f"[yellow]Found {len(orphaned)} orphaned container(s):[/yellow]")
+        for container in orphaned:
+            status = container.status
+            self.console.print(f"  [dim]- {container.name} (status: {status})[/dim]")
+
+        self.console.print("\n[bold]Cleaning up containers...[/bold]")
+
+        # Define callback for verbose output
+        def status_callback(message: str):
+            if self.verbose:
+                self.console.print(f"  [dim]{message}[/dim]")
+
+        # Clean them up with progress feedback
+        count, cleaned_names = temp_manager.cleanup_orphaned_containers(
+            verbose_callback=status_callback
+        )
+
+        if count > 0:
+            self.console.print(f"[green]✓ Successfully removed {count} container(s)[/green]")
+        else:
+            self.console.print("[yellow]⚠ No containers were removed[/yellow]")
+
     def setup_docker(self) -> bool:
         """Build Docker image and initialize TestRunner"""
         dockerfile = self.config_dir / "Dockerfile"
@@ -120,7 +224,7 @@ class SimplifiedOrchestrator:
 
         return True
 
-    def execute_single_run(self, test_run: TestRun) -> TestResult:
+    def execute_single_run(self, test_run: TestRun, tracker: SimpleProgressTracker) -> TestResult:
         """
         Execute and analyze a single test run
 
@@ -128,11 +232,15 @@ class SimplifiedOrchestrator:
 
         Args:
             test_run: TestRun configuration
+            tracker: Progress tracker for stdout output
 
         Returns:
             TestResult object from analysis
         """
         prompt_name = test_run.prompt_config.get("name", "unknown")
+
+        # Mark as running
+        tracker.mark_running(prompt_name, test_run.run_number)
 
         try:
             # Step 1: Execute using TestRunner
@@ -154,16 +262,19 @@ class SimplifiedOrchestrator:
                 # Add execution time to result
                 result.execution_time = artifact.execution_time
 
-                status = "✓ PASS" if result.success else "✗ FAIL"
-                color = "green" if result.success else "red"
-                self.console.print(f"[{color}][{prompt_name}] Run {test_run.run_number}: {status}[/{color}]")
+                # Mark as complete via tracker
+                tracker.mark_complete(
+                    prompt_name,
+                    test_run.run_number,
+                    result.success,
+                    artifact.execution_time,
+                    result.errors if not result.success else None
+                )
 
                 return result
             else:
                 # No transcript - create failed result
-                self.console.print(f"[red][{prompt_name}] No transcript created![/red]")
-
-                return TestResult(
+                result = TestResult(
                     prompt_name=prompt_name,
                     run_number=test_run.run_number,
                     success=False,
@@ -177,14 +288,23 @@ class SimplifiedOrchestrator:
                     execution_time=artifact.execution_time
                 )
 
-        except Exception as e:
-            self.console.print(f"[red][{prompt_name}] Error: {e}[/red]")
+                # Mark as complete (failed) via tracker
+                tracker.mark_complete(
+                    prompt_name,
+                    test_run.run_number,
+                    False,
+                    artifact.execution_time,
+                    result.errors
+                )
 
+                return result
+
+        except Exception as e:
             if self.verbose:
                 import traceback
                 self.console.print(f"[red]Traceback:\n{traceback.format_exc()}[/red]")
 
-            return TestResult(
+            result = TestResult(
                 prompt_name=prompt_name,
                 run_number=test_run.run_number,
                 success=False,
@@ -197,46 +317,49 @@ class SimplifiedOrchestrator:
                 transcript_path=str(test_run.transcript_dir)
             )
 
-    def execute_prompt_tests(
+            # Mark as complete (error) via tracker
+            tracker.mark_complete(
+                prompt_name,
+                test_run.run_number,
+                False,
+                0.0,  # No execution time available
+                result.errors
+            )
+
+            return result
+
+    def create_test_run(
         self,
         prompt_config: Dict[str, Any],
-        progress: Progress,
-        task_id: Any
-    ) -> List[TestResult]:
-        """Execute all runs for a single prompt"""
-        results = []
-        num_runs = prompt_config.get("runs", 3)
+        run_num: int
+    ) -> TestRun:
+        """Create a TestRun configuration"""
         prompt_name = prompt_config.get("name", "unknown")
+        # Still need unique timestamp for container name to avoid conflicts
+        container_timestamp = int(time.time() * 1000)
 
-        for run_num in range(1, num_runs + 1):
-            progress.update(
-                task_id,
-                completed=run_num - 1,
-                description=f"[cyan]{prompt_name}[/cyan] ({run_num}/{num_runs})"
-            )
+        # New hierarchical structure: {prompt-name}/{orchestrator-timestamp}/trial-{N}/
+        base_dir = self.results_dir / prompt_name / self.orchestrator_timestamp
+        trial_dir = base_dir / f"trial-{run_num}"
 
-            timestamp = int(time.time() * 1000)
-            test_run = TestRun(
-                prompt_config=prompt_config,
-                run_number=run_num,
-                container_name=f"test-{prompt_name}-{run_num}-{timestamp}",
-                transcript_dir=self.results_dir / "transcripts" / f"{prompt_name}-{run_num}-{timestamp}",
-                artifacts_path=self.results_dir / "artifacts" / f"{prompt_name}-{run_num}"
-            )
-
-            result = self.execute_single_run(test_run)
-            results.append(result)
-
-            progress.update(task_id, completed=run_num)
-
-        return results
+        return TestRun(
+            prompt_config=prompt_config,
+            run_number=run_num,
+            container_name=f"test-{prompt_name}-{run_num}-{container_timestamp}",
+            transcript_dir=trial_dir / "transcript",
+            artifacts_path=trial_dir / "artifact"
+        )
 
     def run_tests(self, max_workers: int = 6) -> Dict[str, Any]:
-        """Run all tests with parallel execution"""
+        """Run all tests with parallel execution at the individual run level"""
         start_time = time.time()
 
+        # Clean up orphaned containers first
+        self.cleanup_orphaned_containers()
+        self.console.print()
+
         # Load prompts
-        self.console.print("\n[bold]Loading test prompts...[/bold]")
+        self.console.print("[bold]Loading test prompts...[/bold]")
         prompts = self.load_test_prompts()
         self.console.print(f"Found {len(prompts)} test prompt(s)")
 
@@ -248,49 +371,63 @@ class SimplifiedOrchestrator:
         if not self.setup_docker():
             return {}
 
-        # Run tests in parallel
-        self.console.print(f"\n[bold]Running tests (max {max_workers} parallel)...[/bold]\n")
+        # Calculate total runs across all prompts
+        total_runs = sum(prompt.get("runs", 3) for prompt in prompts)
+        self.console.print(f"\n[bold]Running {total_runs} test runs across {len(prompts)} prompt(s) (max {max_workers} parallel)...[/bold]\n")
 
-        all_results = []
+        # Create all test runs upfront
+        all_test_runs = []
+        prompt_run_map = {}  # Map test_run to prompt_config
 
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            console=self.console
-        ) as progress:
+        for prompt_config in prompts:
+            num_runs = prompt_config.get("runs", 3)
+            for run_num in range(1, num_runs + 1):
+                test_run = self.create_test_run(prompt_config, run_num)
+                all_test_runs.append(test_run)
+                prompt_run_map[id(test_run)] = prompt_config
+                # Small delay to ensure unique timestamps
+                time.sleep(0.001)
 
-            tasks = {}
-            for prompt_config in prompts:
-                num_runs = prompt_config.get("runs", 3)
-                task_id = progress.add_task(
-                    f"[cyan]{prompt_config['name']}[/cyan]",
-                    total=num_runs
-                )
-                tasks[prompt_config["name"]] = task_id
+        # Execute all runs in parallel
+        results_by_prompt = {prompt["name"]: [] for prompt in prompts}
 
-            with ThreadPoolExecutor(max_workers=max_workers) as executor:
-                futures = {
-                    executor.submit(
-                        self.execute_prompt_tests,
-                        prompt_config,
-                        progress,
-                        tasks[prompt_config["name"]]
-                    ): prompt_config
-                    for prompt_config in prompts
-                }
+        # Create simple progress tracker
+        tracker = SimpleProgressTracker(verbose=self.verbose)
+        for prompt_config in prompts:
+            tracker.init_prompt(prompt_config["name"], prompt_config.get("runs", 3))
 
-                for future in as_completed(futures):
-                    prompt_config = futures[future]
-                    try:
-                        results = future.result()
-                        all_results.append({
-                            "config": prompt_config,
-                            "results": results
-                        })
-                    except Exception as e:
-                        self.console.print(f"[red]Error executing {prompt_config['name']}: {e}[/red]")
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all individual test runs
+            futures = {
+                executor.submit(self.execute_single_run, test_run, tracker): test_run
+                for test_run in all_test_runs
+            }
+
+            # Process results as they complete
+            for future in as_completed(futures):
+                test_run = futures[future]
+                prompt_config = prompt_run_map[id(test_run)]
+                prompt_name = prompt_config["name"]
+
+                try:
+                    result = future.result()
+                    results_by_prompt[prompt_name].append(result)
+
+                except Exception as e:
+                    print(f"[{prompt_name}] Trial {test_run.run_number}: ERROR - {e}")
+                    sys.stdout.flush()
+
+        # Print progress summary
+        tracker.print_summary()
+
+        # Organize results by prompt
+        all_results = [
+            {
+                "config": prompt_config,
+                "results": results_by_prompt[prompt_config["name"]]
+            }
+            for prompt_config in prompts
+        ]
 
         # Aggregate results
         self.console.print("\n[bold]Analyzing results...[/bold]")
@@ -309,9 +446,9 @@ class SimplifiedOrchestrator:
         self.console.print()
         self.reporter.print_console_report(aggregated_results, total_time)
 
-        timestamp = int(time.time())
-        json_path = self.results_dir / "reports" / f"results-{timestamp}.json"
-        md_path = self.results_dir / "reports" / f"results-{timestamp}.md"
+        # Use orchestrator timestamp for reports (consistent with test run directories)
+        json_path = self.results_dir / "reports" / f"results-{self.orchestrator_timestamp}.json"
+        md_path = self.results_dir / "reports" / f"results-{self.orchestrator_timestamp}.md"
 
         self.reporter.generate_json_report(aggregated_results, json_path, total_time)
         self.reporter.generate_markdown_report(aggregated_results, md_path, total_time)

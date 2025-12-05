@@ -12,6 +12,7 @@
   "includeCoAuthoredBy": false,
   "enableAllProjectMcpServers": true,
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
       "mcp__GoldenPath__list_doc_sources",
       "mcp__GoldenPath__fetch_docs",
@@ -31,7 +32,12 @@
       "Bash(mkdir:*)",
       "Skill(uv)",
       "Skill(bedrock)",
-      "Skill(claude-hooks)"
+      "Skill(claude-hooks)",
+      "Skill(origo-designsystem:punkt-docs)",
+      "Skill(origo-iac-platform:ok-boilerplate-templates)",
+      "Bash(ok pkg add :*)",
+      "Bash(ok pkg install)",
+      "Bash(ok pkg update)"
     ],
     "deny": [
       "Read(**.ssh/**)",

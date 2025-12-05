@@ -270,6 +270,82 @@ class DockerManager:
 
         return count
 
+    def find_orphaned_containers(self) -> list:
+        """
+        Find orphaned test containers from previous runs
+
+        Looks for containers with names starting with 'test-'
+
+        Returns:
+            List of orphaned container objects
+        """
+        try:
+            # Get all containers (running and stopped) with names starting with 'test-'
+            all_containers = self.client.containers.list(all=True)
+            orphaned = [
+                c for c in all_containers
+                if c.name.startswith('test-')
+            ]
+            return orphaned
+        except Exception as e:
+            print(f"Error finding orphaned containers: {e}")
+            return []
+
+    def cleanup_orphaned_containers(self, verbose_callback=None) -> tuple[int, list]:
+        """
+        Find and remove orphaned test containers from previous runs
+
+        Args:
+            verbose_callback: Optional callback function for status updates
+
+        Returns:
+            Tuple of (count of cleaned containers, list of container names)
+        """
+        orphaned = self.find_orphaned_containers()
+
+        if not orphaned:
+            return 0, []
+
+        # Get container names and statuses
+        container_info = []
+        for container in orphaned:
+            container_info.append({
+                'name': container.name,
+                'status': container.status,
+                'container': container
+            })
+
+        count = 0
+        cleaned_names = []
+
+        for info in container_info:
+            container = info['container']
+            container_name = info['name']
+            status = info['status']
+
+            try:
+                if verbose_callback:
+                    verbose_callback(f"Stopping {container_name} (status: {status})")
+
+                # Only stop if running, otherwise just remove
+                if status.lower() in ['running', 'restarting', 'paused']:
+                    self.stop_container(container, timeout=3)
+                elif verbose_callback:
+                    verbose_callback(f"Skipping stop for {container_name} (already {status})")
+
+                if verbose_callback:
+                    verbose_callback(f"Removing {container_name}")
+
+                self.remove_container(container)
+                count += 1
+                cleaned_names.append(container_name)
+            except Exception as e:
+                if verbose_callback:
+                    verbose_callback(f"Error cleaning up {container_name}: {e}")
+                print(f"Error cleaning up orphaned container {container_name}: {e}")
+
+        return count, cleaned_names
+
 
 if __name__ == "__main__":
     # Simple test

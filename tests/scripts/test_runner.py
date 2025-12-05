@@ -138,11 +138,13 @@ class TestRunner:
 
     def info(self, message: str):
         """Print info message"""
-        self.console.print(f"[cyan]{message}[/cyan]")
+        print(message)
+        sys.stdout.flush()
 
     def error(self, message: str):
         """Print error message"""
-        self.console.print(f"[red]ERROR: {message}[/red]")
+        print(f"ERROR: {message}")
+        sys.stdout.flush()
 
     def execute_test_run(
         self,
@@ -249,7 +251,7 @@ class TestRunner:
             system_prompt = "Always review the available skills to see if any of them are relevant for the task at hand. Activate any that may seem even losely relevant to the problem."
 
             self.debug(f"Executing claude -p with prompt: {prompt_text[:100]}...")
-            self.info(f"[{prompt_name}] Running Claude Code (timeout: {timeout}s)...")
+            # Note: "Running..." message is now handled by orchestrator's tracker
 
             # Execute with timeout using threading
             exec_start = time.time()
@@ -284,7 +286,7 @@ class TestRunner:
             # Check if execution timed out
             if exec_thread.is_alive():
                 timed_out = True
-                self.error(f"[{prompt_name}] Execution timed out after {timeout}s")
+                self.error(f"[{prompt_name}] Trial {run_number}: Execution timed out after {timeout}s")
                 execution_errors.append(f"Execution timed out after {timeout}s")
 
                 # Try to stop the container to kill the process
@@ -294,7 +296,7 @@ class TestRunner:
                 except Exception as e:
                     self.debug(f"Error stopping container: {e}")
             elif exec_error:
-                self.error(f"[{prompt_name}] Execution error: {exec_error}")
+                self.error(f"[{prompt_name}] Trial {run_number}: Execution error: {exec_error}")
                 execution_errors.append(f"Execution error: {exec_error}")
             else:
                 self.debug(f"Execution completed in {exec_time:.1f}s with exit code: {exit_code}")
@@ -365,18 +367,18 @@ class TestRunner:
 
             if timed_out:
                 status = ExecutionStatus.TIMEOUT
-                self.console.print(f"[red]⏱ [{prompt_name}] Timed out after {timeout}s[/red]")
+                # Status now reported by orchestrator tracker
             elif exit_code == 0 and transcript_path:
                 status = ExecutionStatus.SUCCESS
-                self.console.print(f"[green]✓ [{prompt_name}] Completed successfully ({execution_time:.1f}s)[/green]")
+                # Status now reported by orchestrator tracker
             elif exit_code != 0:
                 status = ExecutionStatus.FAILED
                 if exit_code != -1:  # Only add if we got a real exit code
                     execution_errors.append(f"Non-zero exit code: {exit_code}")
-                self.console.print(f"[yellow]⚠ [{prompt_name}] Completed with exit code {exit_code} ({execution_time:.1f}s)[/yellow]")
+                # Status now reported by orchestrator tracker
             else:
                 status = ExecutionStatus.ERROR
-                self.console.print(f"[red]✗ [{prompt_name}] Completed with errors ({execution_time:.1f}s)[/red]")
+                # Status now reported by orchestrator tracker
 
             # Create artifact
             artifact = TestExecutionArtifact(
@@ -403,7 +405,7 @@ class TestRunner:
         except Exception as e:
             # Handle any execution errors
             execution_time = time.time() - start_time
-            self.error(f"[{prompt_name}] Execution failed: {e}")
+            self.error(f"[{prompt_name}] Trial {run_number}: Execution failed: {e}")
 
             if self.verbose:
                 import traceback

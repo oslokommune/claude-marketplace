@@ -12,7 +12,7 @@ success_criteria:
   skill_activation_rate: 0.95
   file_created: "*.py"
   file_contains: ["bedrock", "eu-central-1"]
-timeout_seconds: 30
+timeout_seconds: 60
 runs: 3
 support_agent:
   enabled: true

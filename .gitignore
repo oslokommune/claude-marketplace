@@ -1,3 +1,5 @@
 .devcontainer/devcontainer.env
 .transcripts/
 .memories/
+tests/results/
+**/__pycache__/
