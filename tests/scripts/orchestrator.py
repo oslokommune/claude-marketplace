@@ -55,7 +55,6 @@ class SimplifiedOrchestrator:
         self.prompts_dir = self.tests_dir / "prompts"
         self.results_dir = self.tests_dir / "results"
         self.config_dir = self.tests_dir / "config" / "docker"
-        self.plugins_dir = self.project_root / "plugins"
         self.verbose = verbose
         self.override_runs = override_runs
 
@@ -115,7 +114,7 @@ class SimplifiedOrchestrator:
         # Initialize TestRunner
         self.test_runner = TestRunner(
             docker_manager=self.docker_manager,
-            plugins_dir=self.plugins_dir,
+            project_root=self.project_root,
             verbose=self.verbose
         )
 

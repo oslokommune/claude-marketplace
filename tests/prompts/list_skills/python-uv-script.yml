@@ -1,0 +1,16 @@
+name: debug-list-skills
+category: debug
+description: Validate skill listing functionality
+prompt: |
+  List all skills you have access to.
+expected_skills:
+  - origo-ai-platform:python
+success_criteria:
+  skill_activation_rate: 0.95
+  file_created: "*.py"
+  file_contains: ["#!/usr/bin/env python3", "# /// script"]
+timeout_seconds: 30
+runs: 3
+support_agent:
+  enabled: true
+  strategy: "permissive"

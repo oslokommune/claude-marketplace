@@ -1,0 +1,17 @@
+name: python-uv-script
+category: python
+description: Validate Python skill with UV script creation
+prompt: |
+  Create a Python script that reads a JSON file and prints its contents.
+  Use UV with PEP 723 headers. Name it "reader.py".
+expected_skills:
+  - origo-ai-platform:python
+success_criteria:
+  skill_activation_rate: 0.95
+  file_created: "*.py"
+  file_contains: ["#!/usr/bin/env python3", "# /// script"]
+timeout_seconds: 30
+runs: 3
+support_agent:
+  enabled: true
+  strategy: "permissive"

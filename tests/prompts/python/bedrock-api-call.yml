@@ -1,0 +1,18 @@
+name: bedrock-api-call
+category: python
+description: Validate Bedrock skill activation
+prompt: |
+  Create a Python script that uses AWS Bedrock to generate text.
+  Use the Claude Sonnet 4.5 model in eu-central-1 region.
+  Name it "bedrock-test.py".
+expected_skills:
+  - origo-ai-platform:bedrock
+  - origo-ai-platform:python
+success_criteria:
+  skill_activation_rate: 0.95
+  file_created: "*.py"
+  file_contains: ["bedrock", "eu-central-1"]
+timeout_seconds: 30
+runs: 3
+support_agent:
+  enabled: true

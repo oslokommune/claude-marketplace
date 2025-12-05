@@ -67,8 +67,8 @@
   "extraKnownMarketplaces": {
     "origo": {
       "source": {
-        "source": "github",
-        "repo": "oslokommune/claude-plugin"
+        "source": "directory",
+        "path": "/workspace/claude-plugin"
       }
     }
   }

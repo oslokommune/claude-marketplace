@@ -110,8 +110,9 @@ RUN mkdir -p /home/node/.claude/plugins/marketplaces/origo \
   /home/node/.claude/statsig \
   /home/node/.claude/todos
 
-# Copy Claude settings.json into the image
+# Copy Claude configuration files into the image
 # This provides the base configuration including enabled plugins
+# Note: System prompt is passed via --system-prompt flag in test_runner.py
 COPY --chown=node:node settings.json /home/node/.claude/settings.json
 
 # Create statsig stable_id file to skip first-run wizard

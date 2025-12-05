@@ -115,7 +115,7 @@ class TestRunner:
     def __init__(
         self,
         docker_manager: DockerManager,
-        plugins_dir: Path,
+        project_root: Path,
         verbose: bool = False
     ):
         """
@@ -123,11 +123,11 @@ class TestRunner:
 
         Args:
             docker_manager: Configured DockerManager instance
-            plugins_dir: Path to plugins directory to mount
+            project_root: Path to project root directory to mount
             verbose: Enable detailed debug output
         """
         self.docker_manager = docker_manager
-        self.plugins_dir = Path(plugins_dir)
+        self.project_root = Path(project_root)
         self.verbose = verbose
         self.console = Console()
 
@@ -193,8 +193,7 @@ class TestRunner:
             # Look for .devcontainer/devcontainer.env file
             import os
             env_file = None
-            project_root = self.plugins_dir.parent
-            devcontainer_env = project_root / ".devcontainer" / "devcontainer.env"
+            devcontainer_env = self.project_root / ".devcontainer" / "devcontainer.env"
 
             if devcontainer_env.exists():
                 env_file = devcontainer_env
@@ -204,7 +203,7 @@ class TestRunner:
 
             config = ContainerConfig(
                 name=container_name,
-                plugins_dir=self.plugins_dir,
+                project_root=self.project_root,
                 transcript_dir=transcript_dir,
                 artifacts_dir=artifacts_dir,
                 env_vars={},  # env_file will provide the vars
@@ -227,9 +226,28 @@ class TestRunner:
 
             self.debug("Container started successfully")
 
-            # Step 5: Execute claude -p command with timeout
+            # Step 4.5: Register the marketplace
+            self.debug("Registering marketplace...")
+            marketplace_exit_code, marketplace_output = container.exec_run(
+                cmd=["bash", "-c", "claude plugin marketplace add /workspace/claude-plugin"],
+                user="node",
+                workdir="/workspace",
+                demux=False,
+                stream=False
+            )
+
+            if marketplace_exit_code != 0:
+                self.debug(f"Warning: Marketplace registration returned exit code {marketplace_exit_code}")
+                if marketplace_output:
+                    self.debug(f"Marketplace output: {marketplace_output.decode('utf-8', errors='ignore')[:200]}")
+            else:
+                self.debug("Marketplace registered successfully")
+
+            # Step 5: Execute claude -p command with timeout and system prompt
             # Note: To avoid shell escaping issues, we pass the prompt directly as argv
             # instead of going through bash -c with a string
+            system_prompt = "Always review the available skills to see if any of them are relevant for the task at hand. Activate any that may seem even losely relevant to the problem."
+
             self.debug(f"Executing claude -p with prompt: {prompt_text[:100]}...")
             self.info(f"[{prompt_name}] Running Claude Code (timeout: {timeout}s)...")
 
@@ -243,10 +261,10 @@ class TestRunner:
             def run_exec():
                 nonlocal exit_code, output, exec_error
                 try:
-                    # Pass prompt directly as argument to avoid escaping issues
+                    # Pass prompt and system prompt as arguments
                     # Use stdin=/dev/null to prevent hanging on input prompts
                     exit_code, output = container.exec_run(
-                        cmd=["bash", "-c", "claude -p \"$@\" < /dev/null", "bash", prompt_text],
+                        cmd=["bash", "-c", "claude -p \"$1\" --system-prompt \"$2\" < /dev/null", "bash", prompt_text, system_prompt],
                         user="node",
                         workdir="/workspace",
                         demux=False,
@@ -511,10 +529,9 @@ Examples:
     console.print("[green]✓ Docker image ready[/green]\n")
 
     # Create test runner
-    plugins_dir = project_root / "plugins"
     test_runner = TestRunner(
         docker_manager=docker_manager,
-        plugins_dir=plugins_dir,
+        project_root=project_root,
         verbose=args.verbose
     )
 

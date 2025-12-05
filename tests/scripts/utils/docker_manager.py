@@ -26,7 +26,7 @@ from dataclasses import dataclass
 class ContainerConfig:
     """Configuration for a test container"""
     name: str
-    plugins_dir: Path
+    project_root: Path  # Full repository root to mount
     transcript_dir: Path
     artifacts_dir: Path
     env_vars: Optional[Dict[str, str]] = None
@@ -107,10 +107,11 @@ class DockerManager:
         try:
             # Prepare volume mounts
             # Note: settings.json is now baked into the Docker image
+            # The marketplace is configured to load from the mounted repository
             volumes = {
-                str(config.plugins_dir.absolute()): {
-                    'bind': '/home/node/.claude/plugins/marketplaces/origo',
-                    'mode': 'ro'
+                str(config.project_root.absolute()): {
+                    'bind': '/workspace/claude-plugin',
+                    'mode': 'rw'
                 },
                 str(config.transcript_dir.absolute()): {
                     'bind': '/home/node/.claude/projects',

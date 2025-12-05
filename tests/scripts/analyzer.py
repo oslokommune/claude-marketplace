@@ -108,6 +108,15 @@ class TranscriptAnalyzer:
         # Determine overall success
         success = skill_activation_met and validation_met and len(errors) == 0
 
+        # Generate human-readable markdown transcript
+        self._generate_markdown_transcript(
+            transcript_path,
+            parser,
+            test_config,
+            run_number,
+            success
+        )
+
         return TestResult(
             prompt_name=test_config.get("name", "unknown"),
             run_number=run_number,
@@ -233,6 +242,106 @@ class TranscriptAnalyzer:
                     break
 
         return errors
+
+    def _generate_markdown_transcript(
+        self,
+        transcript_path: Path,
+        parser: TranscriptParser,
+        test_config: Dict[str, Any],
+        run_number: int,
+        success: bool
+    ) -> None:
+        """
+        Generate a human-readable markdown version of the transcript
+
+        Args:
+            transcript_path: Path to the JSONL transcript
+            parser: Parsed transcript
+            test_config: Test configuration
+            run_number: Run number
+            success: Whether the test passed
+        """
+        # Create markdown file in the same directory
+        md_path = transcript_path.with_suffix('.md')
+
+        with open(md_path, 'w', encoding='utf-8') as f:
+            # Header
+            f.write(f"# Test Transcript: {test_config.get('name', 'unknown')}\n\n")
+            f.write(f"**Run:** {run_number}\n")
+            f.write(f"**Status:** {'✅ PASS' if success else '❌ FAIL'}\n")
+            f.write(f"**Transcript:** `{transcript_path.name}`\n\n")
+
+            # Test configuration
+            f.write("## Test Configuration\n\n")
+            f.write(f"**Prompt:**\n```\n{test_config.get('prompt', 'N/A')}\n```\n\n")
+            f.write(f"**Expected Skills:** {', '.join(test_config.get('expected_skills', []))}\n")
+            f.write(f"**Timeout:** {test_config.get('timeout_seconds', 120)}s\n\n")
+
+            # Summary
+            f.write("## Summary\n\n")
+            skills = parser.get_skill_activations()
+            tool_usage = parser.get_tool_usage()
+            questions = parser.get_questions_asked()
+
+            f.write(f"- **Skills Activated:** {', '.join(skills) if skills else 'None'}\n")
+            f.write(f"- **Tools Used:** {len(tool_usage)}\n")
+            f.write(f"- **Questions Asked:** {len(questions)}\n")
+            f.write(f"- **Total Messages:** {len(parser.messages)}\n\n")
+
+            # Tool usage breakdown
+            if tool_usage:
+                f.write("### Tool Usage\n\n")
+                for tool, count in sorted(tool_usage.items(), key=lambda x: x[1], reverse=True):
+                    f.write(f"- `{tool}`: {count} time(s)\n")
+                f.write("\n")
+
+            # Conversation
+            f.write("## Conversation\n\n")
+
+            for idx, msg in enumerate(parser.messages, 1):
+                role = msg.role.upper()
+
+                # Message header
+                f.write(f"### {idx}. {role}\n\n")
+
+                # Text content
+                text = msg.text_content.strip()
+                if text:
+                    f.write(f"{text}\n\n")
+
+                # Tool uses
+                tools = msg.tool_uses
+                if tools:
+                    f.write("**Tools Used:**\n\n")
+                    for tool in tools:
+                        tool_name = tool.get('name', 'unknown')
+                        tool_input = tool.get('input', {})
+
+                        f.write(f"- **{tool_name}**\n")
+
+                        # Show input in a compact way
+                        if tool_input:
+                            # Truncate large inputs
+                            input_str = json.dumps(tool_input, indent=2)
+                            if len(input_str) > 500:
+                                input_str = input_str[:500] + "\n  ...(truncated)..."
+                            f.write(f"  ```json\n  {input_str}\n  ```\n")
+                        f.write("\n")
+
+                # Questions
+                questions_in_msg = msg.questions
+                if questions_in_msg:
+                    f.write("**Questions:**\n\n")
+                    for q in questions_in_msg:
+                        f.write(f"- {q.get('question', 'N/A')}\n")
+                    f.write("\n")
+
+                # Skill activations
+                skill_acts = msg.skill_activations
+                if skill_acts:
+                    f.write(f"**✨ Skills Activated:** {', '.join(skill_acts)}\n\n")
+
+                f.write("---\n\n")
 
 
 if __name__ == "__main__":
