@@ -31,6 +31,15 @@
       "author": {
         "name": "Sondre Engebråten"
       }
+    },
+    {
+      "name": "km-internal",
+      "source": "./plugins/km-internal",
+      "description": "Internal workflows and tools for Team kjøremiljø (KM) at Origo Oslo kommune",
+      "version": "0.0.0",
+      "author": {
+        "name": "KITT"
+      }
     }
   ],
   "metadata": {
