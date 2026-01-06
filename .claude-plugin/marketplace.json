@@ -1,49 +1,57 @@
 {
   "name": "dig",
   "owner": {
-    "name": "KITT",
-    "email": "sondre.engebraten@dig.oslo.kommune.no"
+    "name": "Digitaliseringsetaten",
+    "email": "kitt@dig.oslo.kommune.no"
+  },
+  "metadata": {
+    "description": "Official Claude Code plugins for Digitaliseringsetaten (DIG) Oslo kommune",
+    "version": "2.0.0"
   },
   "plugins": [
     {
-      "name": "designsystem",
-      "source": "./plugins/designsystem",
-      "description": "How create frontend applications using Punkt DIGs design system components.",
-      "version": "1.0.0",
+      "name": "ai-platform",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/kunstig-intelligens"
+      },
+      "description": "Best practices and tools for Claude Code usage in DIG Oslo kommune",
       "author": {
-        "name": "Sondre Engebråten"
+        "name": "KITT"
       }
     },
     {
       "name": "iac-platform",
-      "source": "./plugins/iac-platform",
-      "description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates.",
-      "version": "1.0.0",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/golden-path-boilerplate"
+      },
+      "description": "Infrastructure as code with Terraform and Boilerplate templates using the OK tool",
       "author": {
-        "name": "Sondre Engebråten"
-      }
-    },
-    {
-      "name": "ai-platform",
-      "source": "./plugins/ai-platform",
-      "description": "Tools and utilities for using and building with AI models",
-      "version": "1.0.0",
-      "author": {
-        "name": "Sondre Engebråten"
+        "name": "Kjøremiljø"
       }
     },
     {
       "name": "km-internal",
-      "source": "./plugins/km-internal",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/golden-path-iac"
+      },
       "description": "Internal workflows and tools for Team kjøremiljø (KM) at DIG Oslo kommune",
-      "version": "0.0.0",
       "author": {
-        "name": "KITT"
+        "name": "Kjøremiljø"
+      }
+    },
+    {
+      "name": "designsystem",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/punkt"
+      },
+      "description": "Punkt Design System - Oslo Kommune's design system for accessible frontend applications",
+      "author": {
+        "name": "Designsystem"
       }
     }
-  ],
-  "metadata": {
-    "description": "A collection of plugins for Oslo DIG",
-    "version": "1.0.0"
-  }
+  ]
 }

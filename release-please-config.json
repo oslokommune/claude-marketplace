@@ -1,53 +1,17 @@
 {
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
   "packages": {
-    "plugins/ai-platform": {
+    ".": {
       "release-type": "simple",
-      "package-name": "dig-ai-platform",
+      "package-name": "dig-marketplace",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
           "type": "json",
-          "path": ".claude-plugin/plugin.json",
-          "jsonpath": "$.version"
-        }
-      ]
-    },
-    "plugins/designsystem": {
-      "release-type": "simple",
-      "package-name": "dig-designsystem",
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        {
-          "type": "json",
-          "path": ".claude-plugin/plugin.json",
-          "jsonpath": "$.version"
-        }
-      ]
-    },
-    "plugins/iac-platform": {
-      "release-type": "simple",
-      "package-name": "dig-iac-platform",
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        {
-          "type": "json",
-          "path": ".claude-plugin/plugin.json",
-          "jsonpath": "$.version"
-        }
-      ]
-    },
-    "plugins/km-internal": {
-      "release-type": "simple",
-      "package-name": "dig-km-internal",
-      "changelog-path": "CHANGELOG.md",
-      "extra-files": [
-        {
-          "type": "json",
-          "path": ".claude-plugin/plugin.json",
-          "jsonpath": "$.version"
+          "path": ".claude-plugin/marketplace.json",
+          "jsonpath": "$.metadata.version"
         }
       ]
     }
-  },
-  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+  }
 }
