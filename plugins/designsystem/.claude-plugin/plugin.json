@@ -1,7 +1,7 @@
 {
     "name": "dig-designsystem",
     "description": "How to create frontend applications using Punkt - DIGs design system components.",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "author": {
         "name": "Designsystem"
     },
