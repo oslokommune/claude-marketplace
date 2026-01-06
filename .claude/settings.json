@@ -1,56 +1,101 @@
 {
   "env": {
     "CLAUDE_CODE_USE_BEDROCK": "1",
-    "ANTHROPIC_MODEL": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0",
+    "ANTHROPIC_MODEL": "eu.anthropic.claude-opus-4-5-20251101-v1:0",
     "AWS_REGION": "eu-central-1",
     "AWS_DEFAULT_REGION": "eu-central-1",
     "DISABLE_BUG_COMMAND": "1",
     "DISABLE_TELEMETRY": "1",
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "eu.anthropic.claude-3-haiku-20240307-v1:0",
-    "CLAUDE_CODE_SUBAGENT_MODEL": "eu.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    "CLAUDE_CODE_SUBAGENT_MODEL": "eu.anthropic.claude-opus-4-5-20251101-v1:0"
   },
   "includeCoAuthoredBy": false,
   "enableAllProjectMcpServers": true,
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
-      "mcp__GoldenPath__list_doc_sources",
       "mcp__GoldenPath__fetch_docs",
-      "mcp__terraform__searchModules",
-      "mcp__terraform__moduleDetails",
-      "mcp__terraform__resolveProviderDocID",
-      "mcp__terraform__getProviderDocs",
-      "mcp__terraform__searchModules",
-      "Bash(git add:*)",
-      "Bash(git commit -m :*)",
-      "mcp__playwright__browser_take_screenshot",
-      "mcp__playwright__browser_snapshot",
+      "mcp__GoldenPath__list_doc_sources",
       "mcp__playwright__browser_click",
       "mcp__playwright__browser_evaluate",
       "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_take_screenshot",
       "mcp__playwright__browser_wait_for",
+      "mcp__terraform__getProviderDocs",
+      "mcp__terraform__moduleDetails",
+      "mcp__terraform__resolveProviderDocID",
+      "mcp__terraform__searchModules",
+      "Bash(cat:*)",
+      "Bash(gh project item-list:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m :*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
       "Bash(mkdir:*)",
-      "Skill(uv)",
+      "Bash(ok pkg add :*)",
+      "Bash(ok pkg install)",
+      "Bash(ok pkg update)",
+      "Bash(sort:*)",
+      "Bash(test:*)",
+      "Bash(uv:*)",
       "Skill(bedrock)",
-      "Skill(claude-hooks)"
+      "Skill(claude-hooks)",
+      "Skill(claude-skills)",
+      "Skill(github-projects)",
+      "Skill(origo-ai-platform:*)",
+      "Skill(origo-designsystem:*)",
+      "Skill(origo-iac-platform:*)",
+      "Skill(project-overview)",
+      "Skill(uv)"
     ],
     "deny": [
+      "Bash(gh project delete:*)",
+      "Bash(gh project field-delete:*)",
+      "Bash(gh project item-delete:*)",
       "Read(**.ssh/**)",
-      "Read(.gnupg/**)",
-      "Read(.aws/**)",
-      "Read(.docker/config.json)",
-      "Read(secrets**)",
-      "Read(.secrets**)",
-      "Read(.env**)",
-      "Read(*.pem)",
-      "Read(*.key)",
-      "Read(*.p12)",
-      "Read(*.pfx)",
-      "Read(id_rsa*)",
-      "Read(id_ed25519*)",
-      "Read(id_ecdsa*)",
       "Read(*.crt)",
       "Read(*.csr)",
-      "Read(.devcontainer/devcontainer.env)"
+      "Read(*.key)",
+      "Read(*.p12)",
+      "Read(*.pem)",
+      "Read(*.pfx)",
+      "Read(.aws/**)",
+      "Read(.devcontainer/devcontainer.env)",
+      "Read(.docker/config.json)",
+      "Read(.env**)",
+      "Read(.gnupg/**)",
+      "Read(.secrets**)",
+      "Read(id_ecdsa*)",
+      "Read(id_ed25519*)",
+      "Read(id_rsa*)",
+      "Read(secrets**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "uv run scripts/load-memories.py"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 scripts/review_session.py"
+          },
+          {
+            "type": "command",
+            "command": "uv run scripts/organize_permissions.py --merge-local"
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
