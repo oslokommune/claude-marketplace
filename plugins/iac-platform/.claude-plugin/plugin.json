@@ -1,5 +1,5 @@
 {
-    "name": "origo-iac-platform",
+    "name": "dig-iac-platform",
     "description": "How to set up your infrastructure as code platform using Terraform and Boilerplate templates with the help of the OK tool.",
     "version": "1.1.0",
     "author": {
@@ -10,7 +10,7 @@
         "infrastructure as code",
         "terraform",
         "boilerplate",
-        "origo",
+        "dig",
         "ok-tool",
         "aws",
         "ecs",

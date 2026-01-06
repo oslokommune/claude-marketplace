@@ -1,5 +1,5 @@
 {
-  "name": "origo",
+  "name": "dig",
   "owner": {
     "name": "KITT",
     "email": "sondre.engebraten@origo.oslo.kommune.no"
@@ -8,7 +8,7 @@
     {
       "name": "designsystem",
       "source": "./plugins/designsystem",
-      "description": "How create frontend applications using Punkt Origos design system components.",
+      "description": "How create frontend applications using Punkt DIGs design system components.",
       "version": "1.0.0",
       "author": {
         "name": "Sondre Engebråten"
@@ -35,7 +35,7 @@
     {
       "name": "km-internal",
       "source": "./plugins/km-internal",
-      "description": "Internal workflows and tools for Team kjøremiljø (KM) at Origo Oslo kommune",
+      "description": "Internal workflows and tools for Team kjøremiljø (KM) at DIG Oslo kommune",
       "version": "0.0.0",
       "author": {
         "name": "KITT"
@@ -43,7 +43,7 @@
     }
   ],
   "metadata": {
-    "description": "A collection of plugins for Oslo Origo",
+    "description": "A collection of plugins for Oslo DIG",
     "version": "1.0.0"
   }
 }

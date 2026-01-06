@@ -1,6 +1,6 @@
 {
-    "name": "origo-designsystem",
-    "description": "How to create frontend applications using Punkt - Origos design system components.",
+    "name": "dig-designsystem",
+    "description": "How to create frontend applications using Punkt - DIGs design system components.",
     "version": "1.1.0",
     "author": {
         "name": "Designsystem"
@@ -9,7 +9,7 @@
         "design system",
         "frontend",
         "punkt",
-        "origo",
+        "dig",
         "components",
         "react",
         "webcomponents",

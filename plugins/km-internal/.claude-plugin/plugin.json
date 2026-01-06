@@ -1,6 +1,6 @@
 {
-  "name": "origo-km-internal",
-  "description": "Internal workflows and tools for Team kjøremiljø (KM) at Origo Oslo kommune",
+  "name": "dig-km-internal",
+  "description": "Internal workflows and tools for Team kjøremiljø (KM) at DIG Oslo kommune",
   "version": "1.0.0",
   "author": {
     "name": "KITT"

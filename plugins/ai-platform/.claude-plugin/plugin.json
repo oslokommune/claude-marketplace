@@ -1,6 +1,6 @@
 {
-  "name": "origo-ai-platform",
-  "description": "A set of best practices and tools for Claude code usage in Origo Oslo kommune",
+  "name": "dig-ai-platform",
+  "description": "A set of best practices and tools for Claude code usage in DIG Oslo kommune",
   "version": "1.2.0",
   "author": {
     "name": "KITT"

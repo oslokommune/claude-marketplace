@@ -2,9 +2,9 @@
 
 This repository uses [release-please](https://github.com/googleapis/release-please) to automate releases for the three Claude Code plugins:
 
-- `origo-ai-platform`
-- `origo-designsystem`
-- `origo-iac-platform`
+- `dig-ai-platform`
+- `dig-designsystem`
+- `dig-iac-platform`
 
 ## How It Works
 
@@ -46,7 +46,7 @@ Releases happen automatically:
 3. **PR is automatically merged** via GitHub Actions
 4. release-please then automatically:
    - Creates a GitHub release
-   - Creates a git tag (e.g., `origo-ai-platform-v1.1.0`)
+   - Creates a git tag (e.g., `dig-ai-platform-v1.1.0`)
    - Uploads a tarball archive (e.g., `ai-platform-1.1.0.tar.gz`)
 
 No manual intervention needed!
@@ -66,11 +66,11 @@ If you need to trigger a release manually or debug the workflow:
 
 **1. Create a Personal Access Token (Required for Organization Repos)**
 
-For organization repositories (like `oslokommune/claude-plugin`), you need a Personal Access Token (PAT) with `repo` scope:
+For organization repositories (like `oslokommune/claude-marketplace`), you need a Personal Access Token (PAT) with `repo` scope:
 
 1. Go to **GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)**
 2. Click **Generate new token (classic)**
-3. Give it a descriptive name: `release-please-claude-plugin`
+3. Give it a descriptive name: `release-please-claude-marketplace`
 4. Set expiration (recommend: 90 days or 1 year)
 5. Check **repo** scope (full control of private repositories)
 6. Click **Generate token** and copy the token

@@ -10,9 +10,7 @@
     "CLAUDE_CODE_SUBAGENT_MODEL": "eu.anthropic.claude-opus-4-5-20251101-v1:0"
   },
   "includeCoAuthoredBy": false,
-  "enableAllProjectMcpServers": true,
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "mcp__GoldenPath__fetch_docs",
       "mcp__GoldenPath__list_doc_sources",
@@ -27,25 +25,43 @@
       "mcp__terraform__resolveProviderDocID",
       "mcp__terraform__searchModules",
       "Bash(cat:*)",
+      "Bash(docker exec:*)",
+      "Bash(find:*)",
+      "Bash(gh api:*)",
       "Bash(gh project item-list:*)",
+      "Bash(gh run:*)",
       "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Add km-internal plugin for Team kjøremiljø workflows\n\nAdd new km-internal plugin with supporting files for release management, including plugin configuration, changelog, and release-please integration.\nEOF\n\\)\")",
       "Bash(git commit -m :*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
+      "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(ok pkg add :*)",
+      "Bash(ok pkg add cloudfront-static-website website)",
       "Bash(ok pkg install)",
+      "Bash(ok pkg install:*)",
       "Bash(ok pkg update)",
+      "Bash(python3:*)",
+      "Bash(python:*)",
       "Bash(sort:*)",
       "Bash(test:*)",
+      "Bash(tree:*)",
+      "Bash(uv run:*)",
       "Bash(uv:*)",
       "Skill(bedrock)",
       "Skill(claude-hooks)",
       "Skill(claude-skills)",
       "Skill(github-projects)",
-      "Skill(origo-ai-platform:*)",
-      "Skill(origo-designsystem:*)",
-      "Skill(origo-iac-platform:*)",
+      "Skill(dig-ai-platform:*)",
+      "Skill(dig-ai-platform:bedrock)",
+      "Skill(dig-ai-platform:claude-hooks)",
+      "Skill(dig-ai-platform:python)",
+      "Skill(dig-ai-platform:subagent)",
+      "Skill(dig-designsystem:*)",
+      "Skill(dig-designsystem:punkt-docs)",
+      "Skill(dig-iac-platform:*)",
+      "Skill(dig-iac-platform:ok-boilerplate-templates)",
       "Skill(project-overview)",
       "Skill(uv)"
     ],
@@ -70,8 +86,10 @@
       "Read(id_ed25519*)",
       "Read(id_rsa*)",
       "Read(secrets**)"
-    ]
+    ],
+    "defaultMode": "acceptEdits"
   },
+  "enableAllProjectMcpServers": true,
   "hooks": {
     "SessionStart": [
       {
@@ -99,15 +117,15 @@
     ]
   },
   "enabledPlugins": {
-    "ai-platform@origo": true,
-    "iac-platform@origo": true,
-    "designsystem@origo": true
+    "ai-platform@dig": true,
+    "iac-platform@dig": true,
+    "designsystem@dig": true
   },
   "extraKnownMarketplaces": {
-    "origo": {
+    "dig": {
       "source": {
         "source": "github",
-        "repo": "oslokommune/claude-plugin"
+        "repo": "oslokommune/claude-marketplace"
       }
     }
   }

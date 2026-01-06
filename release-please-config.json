@@ -2,7 +2,7 @@
   "packages": {
     "plugins/ai-platform": {
       "release-type": "simple",
-      "package-name": "origo-ai-platform",
+      "package-name": "dig-ai-platform",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
@@ -14,7 +14,7 @@
     },
     "plugins/designsystem": {
       "release-type": "simple",
-      "package-name": "origo-designsystem",
+      "package-name": "dig-designsystem",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
@@ -26,7 +26,7 @@
     },
     "plugins/iac-platform": {
       "release-type": "simple",
-      "package-name": "origo-iac-platform",
+      "package-name": "dig-iac-platform",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
@@ -38,7 +38,7 @@
     },
     "plugins/km-internal": {
       "release-type": "simple",
-      "package-name": "origo-km-internal",
+      "package-name": "dig-km-internal",
       "changelog-path": "CHANGELOG.md",
       "extra-files": [
         {
