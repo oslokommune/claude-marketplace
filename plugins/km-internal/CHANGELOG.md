@@ -5,6 +5,6 @@
 
 ### Features
 
-* Add km-internal plugin for Team kjøremiljø workflows ([9a8eb21](https://github.com/oslokommune/claude-plugin/commit/9a8eb21444a4c9072de72046f395f69e9585634a))
+* Add km-internal plugin for Team kjøremiljø workflows ([9a8eb21](https://github.com/oslokommune/claude-marketplace/commit/9a8eb21444a4c9072de72046f395f69e9585634a))
 
 ## Changelog
