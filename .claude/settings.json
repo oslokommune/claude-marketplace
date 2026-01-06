@@ -25,21 +25,23 @@
       "mcp__terraform__resolveProviderDocID",
       "mcp__terraform__searchModules",
       "Bash(cat:*)",
+      "Bash(claude plugin install ai-platform@dig)",
+      "Bash(claude plugin install designsystem@dig)",
+      "Bash(claude plugin install iac-platform@dig)",
+      "Bash(claude plugin install km-internal@dig)",
+      "Bash(claude plugin marketplace remove dig)",
       "Bash(docker exec:*)",
       "Bash(find:*)",
       "Bash(gh api:*)",
       "Bash(gh project item-list:*)",
       "Bash(gh run:*)",
-      "Bash(git -C /home/sondre/Repositories/claude-plugin tag -l '*origo*')",
       "Bash(git add:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: Add km-internal plugin for Team kj\u00f8remilj\u00f8 workflows\n\nAdd new km-internal plugin with supporting files for release management, including plugin configuration, changelog, and release-please integration.\nEOF\n\\)\")",
       "Bash(git commit -m :*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(ls:*)",
       "Bash(mkdir:*)",
       "Bash(ok pkg add :*)",
-      "Bash(ok pkg add cloudfront-static-website website)",
       "Bash(ok pkg install)",
       "Bash(ok pkg install:*)",
       "Bash(ok pkg update)",
@@ -91,32 +93,6 @@
     "defaultMode": "acceptEdits"
   },
   "enableAllProjectMcpServers": true,
-  "hooks": {
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run scripts/load-memories.py"
-          }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 scripts/review_session.py"
-          },
-          {
-            "type": "command",
-            "command": "uv run scripts/organize_permissions.py --merge-local"
-          }
-        ]
-      }
-    ]
-  },
   "enabledPlugins": {
     "ai-platform@dig": true,
     "iac-platform@dig": true,

@@ -1,25 +1,31 @@
 ---
-name: claude-hooks
-description: Claude Hooks allows to modify the flow of Claude code. This skill describes the use and how to modify these hooks
+name: hooks-reference
+description: Comprehensive guide to Claude Code hooks - how to configure, write, and debug hooks that respond to tool calls, user prompts, sessions, and other events. Use when implementing automation, validation, or conditional logic triggered by Claude Code events.
 ---
 
+# Claude Code Hooks Reference
 
-# Claude Hooks
+Claude Code hooks are bash commands or LLM-based prompts that execute automatically in response to specific events, enabling you to automate workflows, validate actions, and integrate with external systems.
 
-## How to add a hook
+## Quick Start
 
-Claude hooks are places in .claude/settings.json file. Below is an example:
+Hooks are configured in your settings files:
+- **User settings**: `~/.claude/settings.json`
+- **Project settings**: `.claude/settings.json`
+- **Local settings**: `.claude/settings.local.json`
+
+### Basic Structure
 
 ```json
 {
   "hooks": {
-    "PreToolUse": [
+    "EventName": [
       {
-        "matcher": "Bash",
+        "matcher": "ToolPattern",
         "hooks": [
           {
             "type": "command",
-            "command": "jq -r '\"\\(.tool_input.command) - \\(.tool_input.description // \"No description\")\"' >> ~/.claude/bash-command-log.txt"
+            "command": "your-bash-command"
           }
         ]
       }
@@ -28,247 +34,188 @@ Claude hooks are places in .claude/settings.json file. Below is an example:
 }
 ```
 
-Matcher can be "*" if this is unknown at the time of writing.
+## Common Hook Events
 
-## Types of hooks
+| Event | Triggers | Use Case |
+|-------|----------|----------|
+| **PreToolUse** | Before a tool executes | Validate/approve tool calls |
+| **PostToolUse** | After a tool completes | Process results, add context |
+| **PermissionRequest** | When Claude asks permission | Auto-approve or deny tools |
+| **UserPromptSubmit** | When user submits a prompt | Validate input, add context |
+| **Stop** | When Claude finishes responding | Check if work is complete |
+| **SessionStart** | When Claude Code starts | Load environment, context |
+| **SessionEnd** | When Claude Code stops | Cleanup, logging |
+| **Notification** | When Claude sends notifications | Handle alerts |
 
-- PreToolUse: Runs before tool calls (can block them)
-- PostToolUse: Runs after tool calls complete
-- UserPromptSubmit: Runs when the user submits a prompt, before Claude processes it
-- Notification: Runs when Claude Code sends notifications
-- Stop: Runs when Claude Code finishes responding
-- SubagentStop: Runs when subagent tasks complete
-- PreCompact: Runs before Claude Code is about to run a compact operation
-- SessionStart: Runs when Claude Code starts a new session or resumes an existing session
-- SessionEnd: Runs when Claude Code session ends
+## Hook Types
 
-## Hook Event Data
+### Bash Command Hooks (type: "command")
 
-All hooks receive JSON data via stdin. Below are examples of the data structure for each hook type.
-
-### Common Fields
-
-Most hooks include these common fields:
-- `session_id` - Unique identifier for the session
-- `transcript_path` - Path to the session transcript JSONL file
-- `cwd` - Current working directory
-- `hook_event_name` - Name of the hook event
-- `permission_mode` - Current permission mode (when applicable)
-
-### SessionStart
-
-Triggered when Claude Code starts a new session or resumes an existing one.
+Execute bash scripts or commands automatically.
 
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "hook_event_name": "SessionStart",
-  "source": "startup"
+  "type": "command",
+  "command": "bash-command-or-script-path",
+  "timeout": 60
 }
 ```
 
-### SessionEnd
+**Exit codes:**
+- **0**: Success (stdout shown in verbose mode, except UserPromptSubmit adds to context)
+- **2**: Blocking error (stderr is error message, blocks action)
+- **Other**: Non-blocking error (shown in verbose mode)
 
-Triggered when Claude Code session ends.
+### Prompt-Based Hooks (type: "prompt")
+
+Use an LLM to make intelligent context-aware decisions.
 
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "hook_event_name": "SessionEnd",
-  "reason": "prompt_input_exit"
+  "type": "prompt",
+  "prompt": "Your evaluation prompt with $ARGUMENTS placeholder",
+  "timeout": 30
 }
 ```
 
-### UserPromptSubmit
-
-Triggered when the user submits a prompt, before Claude processes it.
-
+Response format:
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "UserPromptSubmit",
-  "prompt": "Write a function to parse JSON"
+  "decision": "approve" | "block",
+  "reason": "Explanation",
+  "continue": false,
+  "stopReason": "Optional message"
 }
 ```
 
-### PreToolUse
+## Key Features
 
-Triggered before a tool is called. Can be used to block or modify tool calls.
+### Matchers
 
+Pattern matching for tool-specific hooks:
+- `Write` - Exact match
+- `Edit|Write` - Regex match
+- `*` or `""` - Match all tools
+
+### Input/Output
+
+**Hook input** (via stdin):
+- `session_id` - Current session ID
+- `cwd` - Working directory
+- `tool_name` - Which tool triggered (for PreToolUse)
+- `tool_input` - The tool's parameters
+- Event-specific fields
+
+**Hook output**:
+- Exit code + stdout/stderr for bash hooks
+- JSON response for prompt hooks
+- Use `continue: false` to stop Claude execution
+
+### Permission Decisions
+
+For `PreToolUse` and `PermissionRequest`:
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "PreToolUse",
-  "tool_name": "Read",
-  "tool_input": {
-    "file_path": "/home/user/project/src/main.py"
+  "hookSpecificOutput": {
+    "permissionDecision": "allow" | "deny" | "ask",
+    "permissionDecisionReason": "Explanation",
+    "updatedInput": { "modified_field": "new_value" }
   }
 }
 ```
 
-Example with Bash tool:
+### Environment Variables
 
+- `CLAUDE_PROJECT_DIR` - Absolute path to project root
+- `CLAUDE_CODE_REMOTE` - "true" if running in web environment
+- `CLAUDE_ENV_FILE` - (SessionStart only) Path to persist environment variables
+
+## For Detailed Reference
+
+See [reference.md](reference.md) for:
+- Complete hook event documentation
+- Detailed input/output schemas
+- All exit code behaviors
+- Advanced JSON output formats
+- Security considerations
+- Hook execution details
+
+See [examples.md](examples.md) for:
+- Practical configuration examples
+- Bash command hooks
+- Prompt-based hooks
+- Permission auto-approval patterns
+- Error handling examples
+- MCP tool hooks
+
+## Common Patterns
+
+### Auto-approve file reads
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "PreToolUse",
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "git status",
-    "description": "Check git repository status"
-  }
-}
-```
-
-### PostToolUse
-
-Triggered after a tool completes execution.
-
-```json
-{
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "PostToolUse",
-  "tool_name": "Bash",
-  "tool_input": {
-    "command": "git status",
-    "description": "Check git repository status"
-  },
-  "tool_response": {
-    "stdout": "On branch main\nnothing to commit, working tree clean\n",
-    "stderr": "",
-    "interrupted": false,
-    "isImage": false
-  }
-}
-```
-
-Example with Read tool:
-
-```json
-{
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "PostToolUse",
-  "tool_name": "Read",
-  "tool_input": {
-    "file_path": "/home/user/project/config.json"
-  },
-  "tool_response": {
-    "type": "text",
-    "file": {
-      "filePath": "/home/user/project/config.json",
-      "content": "{\n  \"version\": \"1.0.0\"\n}\n",
-      "numLines": 3,
-      "startLine": 1,
-      "totalLines": 3
+  "matcher": "Read",
+  "hooks": [
+    {
+      "type": "command",
+      "command": "echo '{\"decision\": \"approve\"}'"
     }
-  }
+  ]
 }
 ```
 
-### SubagentStop
-
-Triggered when a subagent task completes.
-
+### Validate user input
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "SubagentStop",
-  "stop_hook_active": false
+  "hooks": [
+    {
+      "type": "command",
+      "command": "/path/to/validation-script.py"
+    }
+  ]
 }
 ```
 
-### Stop
-
-Triggered when Claude Code finishes responding to the user.
-
+### Intelligent stop decision
 ```json
 {
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "Stop",
-  "stop_hook_active": false
+  "hooks": [
+    {
+      "type": "prompt",
+      "prompt": "Check if all requested tasks are complete. Return JSON with decision: approve or block"
+    }
+  ]
 }
 ```
 
-### Notification
+## Debugging
 
-Triggered when Claude Code sends a notification (not commonly triggered).
+1. **Check configuration**: Run `/hooks` to see registered hooks
+2. **Enable debug mode**: `claude --debug` for detailed execution logs
+3. **Test commands**: Run hook commands manually first
+4. **Verify syntax**: Ensure JSON is valid and scripts are executable
+5. **Check matcher patterns**: Remember matchers are case-sensitive
 
-Expected structure (not yet observed):
-```json
-{
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "Notification",
-  "notification": {
-    "message": "Notification content"
-  }
-}
-```
+Common issues:
+- Quotes not escaped in JSON
+- Wrong matcher names (case-sensitive)
+- Commands not in PATH or missing execute permissions
+- Hook timeouts (default 60 seconds)
 
-### PreCompact
+## Security Considerations
 
-Triggered before Claude Code runs a compact operation (not commonly triggered).
+⚠️ **Hooks execute arbitrary shell commands.** You are responsible for:
+- Validating and sanitizing inputs
+- Quoting all shell variables: `"$VAR"` not `$VAR`
+- Using absolute paths
+- Blocking path traversal (check for `..`)
+- Avoiding sensitive files (`.env`, `.git/`, keys)
 
-Expected structure (not yet observed):
-```json
-{
-  "session_id": "abc12345-1234-5678-90ab-cdef12345678",
-  "transcript_path": "/home/user/.claude/projects/-home-user-project/abc12345.jsonl",
-  "cwd": "/home/user/project",
-  "permission_mode": "default",
-  "hook_event_name": "PreCompact"
-}
-```
+Always review and test hooks in a safe environment before production use.
 
-## Hook Command Tips
+## Next Steps
 
-When writing hook commands that process this JSON data:
-
-1. **Use `jq` for JSON processing**: Parse and extract fields easily
-   ```bash
-   jq -r '.prompt' # Extract the prompt field
-   jq -r '.tool_name' # Extract the tool name
-   ```
-
-2. **Log to files**: Use append mode to keep history
-   ```bash
-   cat >> ~/.claude/hook.log
-   ```
-
-3. **Handle errors gracefully**: Hooks should not break the workflow
-   ```bash
-   command 2>/dev/null || true
-   ```
-
-4. **Access nested fields**: Tool responses often have nested data
-   ```bash
-   jq -r '.tool_response.stdout' # Get stdout from bash commands
-   jq -r '.tool_input.command' # Get the command being executed
-   ```
+- Review complete [reference.md](reference.md) for all hook event types
+- Study [examples.md](examples.md) for practical patterns
+- Create hooks for your workflow
+- Test with `claude --debug`
+- Commit hooks to version control for team consistency

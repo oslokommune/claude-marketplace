@@ -27,22 +27,12 @@
         ]
       }
     ],
-    "SessionStart": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "uv run ${CLAUDE_PLUGIN_ROOT}/scripts/load-memories.py"
-          }
-        ]
-      }
-    ],
     "SessionEnd": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/scripts/review_session.py"
+            "command": "uv run ${CLAUDE_PLUGIN_ROOT}/scripts/organize_permissions.py --merge-local"
           }
         ]
       }
