@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Official Claude Code plugins for Digitaliseringsetaten (DIG) Oslo kommune",
-    "version": "3.0.0"
+    "version": "3.0.1"
   },
   "plugins": [
     {
@@ -46,7 +46,7 @@
       "name": "designsystem",
       "source": {
         "source": "github",
-        "repo": "oslokommune/punkt"
+        "repo": "oslokommune/punkt-ki"
       },
       "description": "Punkt Design System - Oslo Kommune's design system for accessible frontend applications",
       "author": {
