@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://github.com/oslokommune/claude-marketplace/compare/dig-marketplace-v3.0.0...dig-marketplace-v3.0.1) (2026-01-07)
+
+
+### Bug Fixes
+
+* Update version to 3.0.1 and correct repository name for design system plugin ([34ceada](https://github.com/oslokommune/claude-marketplace/commit/34ceadac31dfefbbe559fbe3ef1fe6e3a850b2cd))
+
 ## [3.0.0](https://github.com/oslokommune/claude-marketplace/compare/dig-marketplace-v2.0.0...dig-marketplace-v3.0.0) (2026-01-07)
 
 
