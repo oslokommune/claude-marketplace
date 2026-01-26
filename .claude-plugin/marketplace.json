@@ -85,6 +85,17 @@
       "author": {
         "name": "Kjøremiljø"
       }
+    },
+    {
+      "name": "composite-actions",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/composite-actions"
+      },
+      "description": "Oslo Kommune composite GitHub Actions for CI/CD pipelines including AWS deployments, Docker image operations, Terraform deployments, and CLI tool setup",
+      "author": {
+        "name": "Kjøremiljø"
+      }
     }
   ]
 }
