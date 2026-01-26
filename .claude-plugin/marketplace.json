@@ -52,6 +52,39 @@
       "author": {
         "name": "Designsystem"
       }
+    },
+    {
+      "name": "github-actions-docker-build-push",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/reusable-docker-build-push"
+      },
+      "description": "Reusable GitHub Actions workflow for building and pushing Docker images",
+      "author": {
+        "name": "Kjøremiljø"
+      }
+    },
+    {
+      "name": "github-actions-ok-pkg",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/reusable-ok-pkg-update-and-install"
+      },
+      "description": "Reusable GitHub Actions workflow for ok pkg automation",
+      "author": {
+        "name": "Kjøremiljø"
+      }
+    },
+    {
+      "name": "github-actions-terraform-plan-apply",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/reusable-terraform-plan-apply"
+      },
+      "description": "Reusable GitHub Actions workflow for Terraform plan and apply",
+      "author": {
+        "name": "Kjøremiljø"
+      }
     }
   ]
 }
