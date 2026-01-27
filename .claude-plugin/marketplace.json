@@ -52,6 +52,17 @@
       "author": {
         "name": "Designsystem"
       }
+    },
+    {
+      "name": "betterbeads",
+      "source": {
+        "source": "github",
+        "repo": "falense/betterbeads"
+      },
+      "description": "GitHub-native task management CLI for AI agents using GitHub Issues and Projects",
+      "author": {
+        "name": "falense"
+      }
     }
   ]
 }
