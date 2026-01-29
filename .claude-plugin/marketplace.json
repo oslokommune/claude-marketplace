@@ -59,7 +59,7 @@
         "source": "github",
         "repo": "oslokommune/reusable-docker-build-push"
       },
-      "description": "Reusable GitHub Actions workflow for building and pushing Docker images",
+      "description": "Reusable GitHub Actions workflow for building and pushing Docker images. Used together with iac-platform skill for CI/CD",
       "author": {
         "name": "Kjøremiljø"
       }
@@ -70,7 +70,7 @@
         "source": "github",
         "repo": "oslokommune/reusable-ok-pkg-update-and-install"
       },
-      "description": "Reusable GitHub Actions workflow for ok pkg automation",
+      "description": "Reusable GitHub Actions workflow for ok pkg update and install automation. Used together with iac-platform skill for CI/CD pipelines",
       "author": {
         "name": "Kjøremiljø"
       }
@@ -81,7 +81,7 @@
         "source": "github",
         "repo": "oslokommune/reusable-terraform-plan-apply"
       },
-      "description": "Reusable GitHub Actions workflow for Terraform plan and apply",
+      "description": "Reusable GitHub Actions workflow for Terraform plan and apply operations. Used together with iac-platform skill for CI/CD pipelines",
       "author": {
         "name": "Kjøremiljø"
       }
@@ -92,9 +92,20 @@
         "source": "github",
         "repo": "oslokommune/composite-actions"
       },
-      "description": "Oslo Kommune composite GitHub Actions for CI/CD pipelines including AWS deployments, Docker image operations, Terraform deployments, and CLI tool setup",
+      "description": "Oslo Kommune composite GitHub Actions for CI/CD pipelines. Includes actions for AWS deployments (CloudFront, ECS, S3), Docker image operations (crane-copy-image), Terraform deployments, artifact packaging, release management, Renovate metadata, and CLI tool setup (ok, boilerplate, terraform). Used together with iac-platform skill for CI/CD pipelines",
       "author": {
         "name": "Kjøremiljø"
+      }
+    },
+    {
+      "name": "betterbeads",
+      "source": {
+        "source": "github",
+        "repo": "falense/betterbeads"
+      },
+      "description": "GitHub-native task management CLI for AI agents using GitHub Issues and Projects",
+      "author": {
+        "name": "falense"
       }
     }
   ]

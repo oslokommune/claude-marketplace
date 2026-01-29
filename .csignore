@@ -3,3 +3,7 @@
 # Edit this file to change ignored files
 
 .devcontainer/devcontainer.env
+CLAUDE.md
+AGENTS.md
+.gitignore
+.tmp/project.json
