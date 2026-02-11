@@ -43,17 +43,6 @@
       }
     },
     {
-      "name": "designsystem",
-      "source": {
-        "source": "github",
-        "repo": "oslokommune/punkt-ki"
-      },
-      "description": "Punkt Design System - Oslo Kommune's design system for accessible frontend applications",
-      "author": {
-        "name": "Designsystem"
-      }
-    },
-    {
       "name": "github-actions-docker-build-push",
       "source": {
         "source": "github",
