@@ -29,6 +29,7 @@ claude plugin install <plugin-name>@dig
 | `km-internal` | Internal workflows and tools for Team Kjremilj (KM) |
 | `designsystem` | Punkt Design System - Oslo Kommune's design system for accessible frontend applications |
 | `betterbeads` | GitHub-native task management CLI for AI agents using GitHub Issues and Projects |
+| `claude-ping` | Sound notification plugin that plays themed audio cues in response to Claude Code events |
 
 ## Plugin Sources
 
@@ -41,6 +42,7 @@ This marketplace is an index that points to plugins hosted in their source repos
 | km-internal | [oslokommune/golden-path-iac](https://github.com/oslokommune/golden-path-iac) |
 | designsystem | [oslokommune/punkt-ki](https://github.com/oslokommune/punkt-ki) |
 | betterbeads | [falense/betterbeads](https://github.com/falense/betterbeads) |
+| claude-ping | [oslokommune/claude-ping](https://github.com/oslokommune/claude-ping) |
 
 ## Updating Plugins
 

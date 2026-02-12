@@ -63,6 +63,17 @@
       "author": {
         "name": "falense"
       }
+    },
+    {
+      "name": "claude-ping",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/claude-ping"
+      },
+      "description": "Sound notification plugin that plays themed audio cues in response to Claude Code events",
+      "author": {
+        "name": "Sondre"
+      }
     }
   ]
 }
