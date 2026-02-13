@@ -107,6 +107,17 @@
       "author": {
         "name": "Sondre"
       }
+    },
+    {
+      "name": "claude-today",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/claude-today"
+      },
+      "description": "Logs noteworthy Claude Code session activities so teams can discover valuable use cases from each other",
+      "author": {
+        "name": "Sondre"
+      }
     }
   ]
 }
