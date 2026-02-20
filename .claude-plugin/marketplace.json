@@ -118,6 +118,17 @@
       "author": {
         "name": "Sondre"
       }
+    },
+    {
+      "name": "oslo-kommune",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/claude-skills"
+      },
+      "description": "Generic skills for Claude Code at Oslo kommune",
+      "author": {
+        "name": "KITT"
+      }
     }
   ]
 }
