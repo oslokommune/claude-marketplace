@@ -120,6 +120,17 @@
       }
     },
     {
+      "name": "punkt-designsystem",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/punkt-skills"
+      },
+      "description": "Skills for using and developing the Punkt design system (Elements, React, CSS)",
+      "author": {
+        "name": "Team Designsystem"
+      }
+    },
+    {
       "name": "oslo-kommune",
       "source": {
         "source": "github",
