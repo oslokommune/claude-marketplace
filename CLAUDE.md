@@ -13,6 +13,7 @@ The marketplace is an **index only** - it points to plugins hosted in their sour
 | km-internal | [oslokommune/golden-path-iac](https://github.com/oslokommune/golden-path-iac) |
 | designsystem | [oslokommune/punkt](https://github.com/oslokommune/punkt) |
 | claude-skills | [oslokommune/claude-skills](https://github.com/oslokommune/claude-skills) |
+| ide-til-produkt | [oslokommune/ide-til-produkt](https://github.com/oslokommune/ide-til-produkt) |
 
 ## For End Users
 

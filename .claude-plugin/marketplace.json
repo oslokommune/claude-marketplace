@@ -140,6 +140,17 @@
       "author": {
         "name": "KITT"
       }
+    },
+    {
+      "name": "ide-til-produkt",
+      "source": {
+        "source": "github",
+        "repo": "oslokommune/ide-til-produkt"
+      },
+      "description": "Stegvis produktutviklingsflyt med Django, HTMX og Punkt. Scaffold nye prosjekter i steg 1-3 og migrér mellom steg.",
+      "author": {
+        "name": "Sondre"
+      }
     }
   ]
 }
