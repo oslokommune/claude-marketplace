@@ -27,7 +27,7 @@ claude plugin install <plugin-name>@dig
 | `ai-platform` | Best practices and tools for Claude Code usage in DIG Oslo kommune |
 | `iac-platform` | Infrastructure as code with Terraform and Boilerplate templates using the OK tool |
 | `km-internal` | Internal workflows and tools for Team Kjremilj (KM) |
-| `designsystem` | Punkt Design System - Oslo Kommune's design system for accessible frontend applications |
+| `punkt-designsystem` | Punkt Design System - Oslo Kommune's design system for accessible frontend applications |
 | `betterbeads` | GitHub-native task management CLI for AI agents using GitHub Issues and Projects |
 | `claude-ping` | Sound notification plugin that plays themed audio cues in response to Claude Code events |
 
@@ -40,7 +40,7 @@ This marketplace is an index that points to plugins hosted in their source repos
 | ai-platform | [oslokommune/kunstig-intelligens](https://github.com/oslokommune/kunstig-intelligens) |
 | iac-platform | [oslokommune/golden-path-boilerplate](https://github.com/oslokommune/golden-path-boilerplate) |
 | km-internal | [oslokommune/golden-path-iac](https://github.com/oslokommune/golden-path-iac) |
-| designsystem | [oslokommune/punkt-ki](https://github.com/oslokommune/punkt-ki) |
+| punkt-designsystem | [oslokommune/punkt-ki](https://github.com/oslokommune/punkt-ki) |
 | betterbeads | [falense/betterbeads](https://github.com/falense/betterbeads) |
 | claude-ping | [oslokommune/claude-ping](https://github.com/oslokommune/claude-ping) |
 
