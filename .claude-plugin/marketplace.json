@@ -153,6 +153,7 @@
       }
     },
     {
+<<<<<<< HEAD
       "name": "screenshot",
       "source": {
         "source": "github",
@@ -161,6 +162,16 @@
       "description": "Capture screenshots of web pages using Playwright for visual inspection by AI agents",
       "author": {
         "name": "Sondre Engebråten"
+=======
+      "name": "claude-prompt-patterns",
+      "source": {
+        "source": "github",
+        "repo": "falense/claude-prompt-patterns"
+      },
+      "description": "Reusable prompting patterns as slash commands: /rethink (first-principles rewrites), /architect (delegate to parallel Opus agents and review), /deploy (deploy via a project-local cheat file)",
+      "author": {
+        "name": "Sondre"
+>>>>>>> 36bf290 (feat: add claude-prompt-patterns plugin)
       }
     }
   ]

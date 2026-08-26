@@ -14,6 +14,7 @@ The marketplace is an **index only** - it points to plugins hosted in their sour
 | designsystem | [oslokommune/punkt](https://github.com/oslokommune/punkt) |
 | claude-skills | [oslokommune/claude-skills](https://github.com/oslokommune/claude-skills) |
 | ide-til-produkt | [oslokommune/ide-til-produkt](https://github.com/oslokommune/ide-til-produkt) |
+| claude-prompt-patterns | [falense/claude-prompt-patterns](https://github.com/falense/claude-prompt-patterns) |
 
 ## For End Users
 
