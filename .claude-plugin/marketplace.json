@@ -28,7 +28,7 @@
       },
       "description": "Infrastructure as code with Terraform and Boilerplate templates using the OK tool",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
@@ -39,7 +39,7 @@
       },
       "description": "Internal workflows and tools for Team kjøremiljø (KM) at DIG Oslo kommune",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
@@ -50,7 +50,7 @@
       },
       "description": "Reusable GitHub Actions workflow for building and pushing Docker images. Used together with iac-platform skill for CI/CD",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
@@ -61,7 +61,7 @@
       },
       "description": "Reusable GitHub Actions workflow for ok pkg update and install automation. Used together with iac-platform skill for CI/CD pipelines",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
@@ -72,7 +72,7 @@
       },
       "description": "Reusable GitHub Actions workflow for Terraform plan and apply operations. Used together with iac-platform skill for CI/CD pipelines",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
@@ -83,7 +83,7 @@
       },
       "description": "Oslo Kommune composite GitHub Actions for CI/CD pipelines. Includes actions for AWS deployments (CloudFront, ECS, S3), Docker image operations (crane-copy-image), Terraform deployments, artifact packaging, release management, Renovate metadata, and CLI tool setup (ok, boilerplate, terraform). Used together with iac-platform skill for CI/CD pipelines",
       "author": {
-        "name": "Kjøremiljø"
+        "name": "Utviklerflyt"
       }
     },
     {
